@@ -8,30 +8,27 @@
 import Foundation
 
 class NumberViewModel {
-    var inputText = "" {
-        didSet {
-            validation()
-            print("==", oldValue, outputResult)
-        }
-    }
-    var outputResult = "" {
-        didSet {
-            // 뷰 레이블 내용 보여주기
+    var inputText = Observable("")
+    
+    var outputResult = Observable("")
+    
+    init() {    // 초기화할 때 inputText의 값이 바뀔 때 마다 어떤 기능을 실행할 것인지 설정
+        inputText.bind { value in
+            self.validation(value)
         }
     }
     
     // 데이터 가공
-    private func validation() {
-        let text = inputText
+    private func validation(_ text: String) {
         
         // 1. 빈값
         if text.isEmpty {
-            outputResult = "값을 입력해주세요"
+            outputResult.value = "값을 입력해주세요"
         }
         
         // 2. 문자열이 숫자인지 문자인지 체크
         guard let num = Int(text) else {
-            outputResult = "숫자만 입력해주세요"
+            outputResult.value = "숫자만 입력해주세요"
             return
         }
         
@@ -40,9 +37,9 @@ class NumberViewModel {
             let formatter = NumberFormatter()
             formatter.numberStyle = .decimal
             let result = formatter.string(for: num)
-            outputResult = result!
+            outputResult.value = result!
         } else {
-            outputResult = "100만원 이하로 입력해주세요."
+            outputResult.value = "100만원 이하로 입력해주세요."
         }
     }
 }
